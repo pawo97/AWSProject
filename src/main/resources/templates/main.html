@@ -4,7 +4,37 @@
 
 <h1>Welcome to File Uploader</h1>
 
-<label for="myfile">Select a file:</label>
-<input type="file" id="myfile" name="myfile">
+ <h1>List of upload files:</h1>
+    
+    <table>
+        <thead>
+            <tr>
+                <th> Name </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="image : ${images}">
+                <td><span th:text="${image.name}"> Name </span></td>
+                <td><input type="button" value="Download"/></td>
+                <td><input type="button" value="Change Name"/></td>
+            </tr>
+        </tbody>
+    </table>  
+   
+    <h1>Upload file:</h1>
+
+<form method="POST" enctype="multipart/form-data" action="/upload">
+	<table>
+   		<tr><td>File to upload:</td>
+   		<td><input type="file" name="file"/></td></tr>
+   		<tr>
+           <td>Name with extension:</td><td><input type="text" name="name"/></td>
+        </tr>
+        <tr>
+            <td></td><td><input type="submit" name="Upload"/></td>
+        </tr>
+	</table>
+<form>   
+    
 </body>
 </html>
