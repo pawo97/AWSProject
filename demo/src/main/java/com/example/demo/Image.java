@@ -4,8 +4,9 @@ public class Image {
 
     public Image() {}
 
-    public Image(String name) {
+    public Image(int Id, String name) {
         this.name = name;
+        this.Id = Id;
     }
 
     public String getName() {
@@ -16,6 +17,15 @@ public class Image {
         this.name = name;
     }
 
+    private int Id;
     private String name;
+
+    public int getId() {
+        return Id;
+    }
+
+    public void setId(int id) {
+        Id = id;
+    }
 
 }

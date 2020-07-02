@@ -7,8 +7,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -25,6 +30,7 @@ import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 
+@CrossOrigin(maxAge = 3600, origins = "*")
 @Controller
 public class MainUploadController {
 
@@ -32,8 +38,8 @@ public class MainUploadController {
     private String bucketName = "dataproject23";
 
     // Strona startowa z lista plikow w kubelku
-    @RequestMapping("/")
-    public String getUploadMainPage(@RequestParam(required = false, name = "myFile") File name, Model model) {
+    @GetMapping("/")
+    public ResponseEntity<?> getUploadMainPage(@RequestParam(required = false, name = "myFile") File name, Model model) {
 
         AmazonS3 s3 = AmazonS3ClientBuilder.standard()
                                            .withRegion(Regions.US_EAST_1)
@@ -41,23 +47,24 @@ public class MainUploadController {
 
         ListObjectsV2Result result = s3.listObjectsV2(bucketName);
         List<S3ObjectSummary> objects = result.getObjectSummaries();
-        List<Image> images = new ArrayList<>();
+        ArrayList<Image> images = new ArrayList<>();
+        int i = 0;
         for (S3ObjectSummary os : objects) {
             // System.out.println("* " + os.getKey());
-            images.add(new Image(os.getKey()));
+            images.add(new Image(i++, os.getKey()));
         }
 
-        model.addAttribute("images", images);
-
-        return "main";
+        // model.addAttribute("images", images);
+        System.out.println("Wyswietlono");
+        return new ResponseEntity<>(images, HttpStatus.OK);
     }
 
     // Request do pobrania danego pliku
-    private String nameOfFileToDownload = "c.txt";
 
-    @RequestMapping("/d")
-    public String download() {
+    @GetMapping("/d/{filename}")
+    public ResponseEntity<?> download(@PathVariable String filename) {
 
+        String nameOfFileToDownload = filename;
         System.out.format("Downloading %s from S3 bucket %s...\n", nameOfFileToDownload, bucketName);
         final AmazonS3 s3 = AmazonS3ClientBuilder.standard()
                                                  .withRegion(Regions.US_EAST_1)
@@ -83,7 +90,7 @@ public class MainUploadController {
             System.err.println(e.getMessage());
             System.exit(1);
         }
-        return "main";
+        return new ResponseEntity<>(nameOfFileToDownload, HttpStatus.OK);
     }
 
     // Request do przeslania danego pliku o danym podanej nazwie podanej w inpucie

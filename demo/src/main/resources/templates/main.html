@@ -15,8 +15,8 @@
         <tbody>
             <tr th:each="image : ${images}">
                 <td><span th:text="${image.name}"> Name </span></td>
-                <td><input type="button" value="Download"/></td>
-                <td><input type="button" value="Change Name"/></td>
+                <td><button type="button" value="Download" onclick="/upload"/></td>
+                <td><button type="button" value="Change Name" onclick=""/></td>
             </tr>
         </tbody>
     </table>  
